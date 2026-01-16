@@ -17,8 +17,27 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet()); // Security headers
+// CORS Configuration
+const allowedOrigins = [
+    process.env.FRONTEND_URL,              // Main Frontend (Next.js)
+    'http://localhost:3000',               // Local Next.js
+    'http://localhost:8501',               // Local Streamlit
+    'http://localhost:7860',               // Local HF Docker
+    'https://prithvir1011-migration-audit.hf.space' // Hugging Face Space
+].filter(Boolean);
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin) || allowedOrigins.some(o => o.trim() === origin)) {
+            callback(null, true);
+        } else {
+            console.log('Blocked by CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 app.use(morgan('dev')); // Logging
