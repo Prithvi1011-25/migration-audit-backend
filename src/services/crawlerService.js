@@ -140,7 +140,7 @@ const crawlWithPuppeteer = async (url) => {
                 description,
                 canonical,
                 ogTags,
-                headingsStructure: { h1Count, h2Count, h3Count },
+                headingsStructure: { h1Count, h2Count, h3Count, h1Text: Array.from(document.querySelectorAll('h1')).map(h => h.textContent.trim()) },
                 allLinks,
                 structuredData,
             };
@@ -232,10 +232,16 @@ const extractLinks = ($, baseUrl) => {
  * @returns {object} Headings structure
  */
 const extractHeadings = ($) => {
+    const h1Text = [];
+    $('h1').each((i, elem) => {
+        h1Text.push($(elem).text().trim());
+    });
+
     return {
         h1Count: $('h1').length,
         h2Count: $('h2').length,
         h3Count: $('h3').length,
+        h1Text,
     };
 };
 

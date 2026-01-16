@@ -262,7 +262,7 @@ const processProject = async (projectId) => {
                     url: pair.oldUrl,
                     title: oldSEO.seoData?.title || '',
                     description: oldSEO.seoData?.description || '',
-                    h1: [oldSEO.seoData?.headingsStructure?.h1Count > 0 ? 'H1 exists' : ''],
+                    h1: oldSEO.seoData?.headingsStructure?.h1Text || [],
                     canonical: oldSEO.seoData?.canonicalUrl || '',
                     ogTags: oldSEO.seoData?.ogTags || {},
                     extractedAt: new Date(),
@@ -274,7 +274,7 @@ const processProject = async (projectId) => {
                     url: pair.newUrl,
                     title: newSEO.seoData?.title || '',
                     description: newSEO.seoData?.description || '',
-                    h1: [newSEO.seoData?.headingsStructure?.h1Count > 0 ? 'H1 exists' : ''],
+                    h1: newSEO.seoData?.headingsStructure?.h1Text || [],
                     canonical: newSEO.seoData?.canonicalUrl || '',
                     ogTags: newSEO.seoData?.ogTags || {},
                     extractedAt: new Date(),
@@ -285,13 +285,13 @@ const processProject = async (projectId) => {
                     {
                         title: oldSEO.seoData?.title,
                         description: oldSEO.seoData?.description,
-                        h1: oldSEO.seoData?.headingsStructure?.h1Count > 0 ? ['H1'] : [],
+                        h1: oldSEO.seoData?.headingsStructure?.h1Text || [],
                         canonicalUrl: oldSEO.seoData?.canonicalUrl,
                     },
                     {
                         title: newSEO.seoData?.title,
                         description: newSEO.seoData?.description,
-                        h1: newSEO.seoData?.headingsStructure?.h1Count > 0 ? ['H1'] : [],
+                        h1: newSEO.seoData?.headingsStructure?.h1Text || [],
                         canonicalUrl: newSEO.seoData?.canonicalUrl,
                     },
                     pair.newUrl
