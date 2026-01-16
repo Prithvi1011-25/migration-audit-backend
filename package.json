@@ -1,0 +1,46 @@
+{
+  "name": "migration-audit-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Migration Audit Platform",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "audit",
+    "performance",
+    "lighthouse",
+    "seo"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@slack/webhook": "^7.0.2",
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12",
+    "chrome-launcher": "^1.1.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "lighthouse": "^11.4.0",
+    "mongoose": "^8.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^6.9.7",
+    "p-queue": "^9.1.0",
+    "puppeteer": "^21.6.1",
+    "redis": "^4.6.11",
+    "robots-parser": "^3.0.1",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  }
+}
