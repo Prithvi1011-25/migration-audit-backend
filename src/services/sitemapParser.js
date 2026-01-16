@@ -17,7 +17,11 @@ export const parseSitemap = async (filePath, isFile = true) => {
             xmlContent = fs.readFileSync(filePath, 'utf8');
         } else {
             // Fetch from URL
-            const response = await axios.get(filePath);
+            const response = await axios.get(filePath, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)',
+                }
+            });
             xmlContent = response.data;
         }
 

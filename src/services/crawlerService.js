@@ -38,7 +38,7 @@ const crawlWithCheerio = async (url) => {
             maxRedirects: 5,
             validateStatus: (status) => status < 500, // Accept 4xx errors
             headers: {
-                'User-Agent': 'MigrationAuditBot/1.0',
+                'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)',
             },
         });
 
@@ -254,7 +254,10 @@ const extractHeadings = ($) => {
 export const checkRobotsTxt = async (url) => {
     try {
         const robotsUrl = new URL('/robots.txt', url).toString();
-        const response = await axios.head(robotsUrl, { timeout: 5000 });
+        const response = await axios.head(robotsUrl, {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)' }
+        });
         return response.status === 200;
     } catch (error) {
         return false;
@@ -272,7 +275,10 @@ export const checkSitemap = async (url) => {
     for (const sitemapPath of sitemapUrls) {
         try {
             const sitemapUrl = new URL(sitemapPath, url).toString();
-            const response = await axios.head(sitemapUrl, { timeout: 5000 });
+            const response = await axios.head(sitemapUrl, {
+                timeout: 5000,
+                headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)' }
+            });
             if (response.status === 200) {
                 return true;
             }
