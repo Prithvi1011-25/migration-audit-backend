@@ -2,7 +2,7 @@ import MigrationProject from '../models/MigrationProject.js';
 import { parseSitemap, extractUrls } from '../services/sitemapParser.js';
 import { parseGSCExport, parseRedirectMapping, extractGSCUrls } from '../services/csvParser.js';
 import { compareUrls, detectPatternChanges } from '../services/urlComparisonService.js';
-import { checkMultipleUrls, categorizeResults, findBrokenLinks, analyzeRedirects } from '../services/statusChecker.js';
+import { checkMultipleUrls, categorizeResults, findBrokenLinks, analyzeRedirects, checkInternalLinkRedirects } from '../services/statusChecker.js';
 import { crawlUrl } from '../services/crawlerService.js';
 import { compareSEOData, generateSummary } from '../services/seoComparisonService.js';
 import { runBatchAudits, getCoreWebVitalsAssessment } from '../services/lighthouseService.js';
@@ -302,6 +302,33 @@ const processProject = async (projectId) => {
                     newUrl: pair.newUrl,
                     ...comparison,
                 });
+
+                // --- Internal Link Check ---
+                // Check internal links found on the OLD page
+                if (oldSEO.links?.internalLinkUrls?.length > 0) {
+                    console.log(`  Checking ${oldSEO.links.internalLinkUrls.length} internal links on ${pair.oldUrl}...`);
+
+                    // We need the old base URL to resolve relative links. 
+                    // urlComparisonService might have it, or we can derive from the oldUrl.
+                    const oldUrlOrigin = new URL(pair.oldUrl).origin;
+
+                    const linkCheckResults = await checkInternalLinkRedirects(
+                        oldSEO.links.internalLinkUrls,
+                        oldUrlOrigin
+                    );
+
+                    // Add to results
+                    if (!project.results.internalLinkChecks) {
+                        project.results.internalLinkChecks = [];
+                    }
+
+                    project.results.internalLinkChecks.push({
+                        sourcePage: pair.oldUrl,
+                        linksChecked: linkCheckResults.length,
+                        results: linkCheckResults
+                    });
+                }
+                // ---------------------------
 
                 console.log(`  SEO validated: ${pair.oldUrl} → ${pair.newUrl} (Score: ${comparison.matchScore})`);
 

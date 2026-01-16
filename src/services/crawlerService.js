@@ -147,7 +147,8 @@ const crawlWithPuppeteer = async (url) => {
         });
 
         // Categorize links
-        const internalLinks = pageData.allLinks.filter((link) => link.startsWith(url)).length;
+        const internalLinkUrls = pageData.allLinks.filter((link) => link.startsWith(url));
+        const internalLinks = internalLinkUrls.length;
         const externalLinks = pageData.allLinks.length - internalLinks;
 
         return {
@@ -165,6 +166,7 @@ const crawlWithPuppeteer = async (url) => {
             links: {
                 internalLinks,
                 externalLinks,
+                internalLinkUrls,
                 brokenLinks: [], // Would need additional checks
             },
         };
@@ -213,15 +215,14 @@ const extractLinks = ($, baseUrl) => {
         }
     });
 
-    const internalLinks = allLinks.filter((link) =>
+    const internalLinkUrls = allLinks.filter((link) =>
         link.startsWith('/') || link.startsWith(baseUrl)
-    ).length;
-
-    const externalLinks = allLinks.length - internalLinks;
+    );
 
     return {
-        internalLinks,
-        externalLinks,
+        internalLinks: internalLinkUrls.length,
+        externalLinks: allLinks.length - internalLinkUrls.length,
+        internalLinkUrls: internalLinkUrls, // Exposed for redirect checking
         brokenLinks: [], // Would require additional HTTP checks
     };
 };

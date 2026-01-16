@@ -234,10 +234,65 @@ export const analyzeRedirects = (results) => {
     };
 };
 
+/**
+ * Check redirects for internal links
+ * @param {Array<string>} links - List of internal links to check
+ * @param {string} baseUrl - New site base URL to resolve relative links
+ * @returns {Promise<Array>} Validation results
+ */
+export const checkInternalLinkRedirects = async (links, baseUrl) => {
+    // Deduplicate links
+    const uniqueLinks = [...new Set(links)];
+
+    // Resolve relative URLs to absolute
+    // Note: We assume these are old site links that should redirect to the new site
+    // But if we are checking "internal links on the old page", they are relative to the OLD site.
+    // However, statusChecker needs absolute URLs.
+    // Ideally, we follow them. If they are on the old site, they should 301 to the new site.
+
+    // Logic: 
+    // 1. Crawl Old Page -> Found link "/foo"
+    // 2. We construct "http://oldsite.com/foo" (using the page's origin?)
+    //    Actually, we need the origin of the page where the link was found.
+    //    The 'baseUrl' param here should probably be the origin of the page being crawled (Old Site Base URL).
+
+    // Let's rely on the caller to pass absolute URLs or handle resolution if possible.
+    // But crawler returns relative paths often.
+
+    // Updated Logic: We will attempt to resolve against the provided baseUrl.
+    const absoluteLinks = uniqueLinks.map(link => {
+        if (link.startsWith('http')) return link;
+        try {
+            return new URL(link, baseUrl).toString();
+        } catch (e) {
+            return null;
+        }
+    }).filter(l => l !== null);
+
+    // Reuse existing status checker
+    // We expect these old links to Redirect (301) to the New Site (200)
+    const results = await checkMultipleUrls(absoluteLinks, {
+        concurrency: 5,
+        delay: 50,
+        followRedirects: true
+    });
+
+    return results.map(result => ({
+        originalLink: result.url,
+        finalUrl: result.finalUrl,
+        statusCode: result.statusCode,
+        status: result.statusCode === 200 ? 'ok' :
+            result.statusCode === 404 ? 'broken' : 'error',
+        isRedirected: result.redirectChain.length > 0,
+        redirectChain: result.redirectChain
+    }));
+};
+
 export default {
     checkUrlStatus,
     checkMultipleUrls,
     categorizeResults,
     findBrokenLinks,
     analyzeRedirects,
+    checkInternalLinkRedirects,
 };
