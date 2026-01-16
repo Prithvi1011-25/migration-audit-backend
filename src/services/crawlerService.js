@@ -16,7 +16,12 @@ export const crawlUrl = async (url, options = {}) => {
         if (useHeadless) {
             return await crawlWithPuppeteer(url);
         } else {
-            return await crawlWithCheerio(url);
+            try {
+                return await crawlWithCheerio(url);
+            } catch (cheerioError) {
+                console.log(`Cheerio crawl failed for ${url} (${cheerioError.message}). Retrying with Puppeteer...`);
+                return await crawlWithPuppeteer(url);
+            }
         }
     } catch (error) {
         console.error('Crawl error:', error);

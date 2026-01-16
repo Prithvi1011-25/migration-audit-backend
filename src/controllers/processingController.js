@@ -128,16 +128,35 @@ const processProject = async (projectId) => {
         let oldUrls = [];
         let newUrls = [];
 
+        // Helper to parse file based on extension
+        const parseFile = async (file) => {
+            if (file.filename.endsWith('.csv')) {
+                const { parseCsvUrls } = await import('../services/csvUrlParser.js');
+                const urls = await parseCsvUrls(file.path);
+                return {
+                    urls: urls.map(u => u.url), // Extract just URL string
+                    raw: urls
+                };
+            } else {
+                const { parseSitemap, extractUrls } = await import('../services/sitemapParser.js');
+                const data = await parseSitemap(file.path, true);
+                return {
+                    urls: extractUrls(data),
+                    raw: data
+                };
+            }
+        };
+
         if (project.files?.oldSitemap?.path) {
-            const oldSitemapData = await parseSitemap(project.files.oldSitemap.path, true);
-            oldUrls = extractUrls(oldSitemapData);
-            console.log(`Extracted ${oldUrls.length} URLs from old sitemap`);
+            const result = await parseFile(project.files.oldSitemap);
+            oldUrls = result.urls;
+            console.log(`Extracted ${oldUrls.length} URLs from old file (${project.files.oldSitemap.filename})`);
         }
 
         if (project.files?.newSitemap?.path) {
-            const newSitemapData = await parseSitemap(project.files.newSitemap.path, true);
-            newUrls = extractUrls(newSitemapData);
-            console.log(`Extracted ${newUrls.length} URLs from new sitemap`);
+            const result = await parseFile(project.files.newSitemap);
+            newUrls = result.urls;
+            console.log(`Extracted ${newUrls.length} URLs from new file (${project.files.newSitemap.filename})`);
         }
 
         // Step 2: Parse GSC export (optional)
