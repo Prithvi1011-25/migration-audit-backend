@@ -38,7 +38,7 @@ const crawlWithCheerio = async (url) => {
             maxRedirects: 5,
             validateStatus: (status) => status < 500, // Accept 4xx errors
             headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             },
         });
 
@@ -256,7 +256,7 @@ export const checkRobotsTxt = async (url) => {
         const robotsUrl = new URL('/robots.txt', url).toString();
         const response = await axios.head(robotsUrl, {
             timeout: 5000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)' }
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
         });
         return response.status === 200;
     } catch (error) {
@@ -277,7 +277,7 @@ export const checkSitemap = async (url) => {
             const sitemapUrl = new URL(sitemapPath, url).toString();
             const response = await axios.head(sitemapUrl, {
                 timeout: 5000,
-                headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MigrationAuditBot/1.0)' }
+                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
             });
             if (response.status === 200) {
                 return true;
